@@ -2,8 +2,14 @@ package com.example.jhyun_000.fcmtest;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -12,7 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.IOException;
 
@@ -21,18 +26,45 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
-public class MainActivity extends AppCompatActivity {
+//import com.google.firebase.iid.FirebaseInstanceId;
 
-    //    private static final String TAG = "MainActivity";
+//import com.google.firebase.iid.FirebaseInstanceId;
+
+public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Token";
     String token;
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+    int REQUEST_FINE = 1;
+    int REQUEST_COARSE = 2;
+    int REQUEST_INTERNET = 3;
+
+    Button button_gps;
+    Button button_timer_start;
+    Button button_timer_end;
+    Button button_emergecy;
+    TextView textView;
+
+    double longitude;
+    double latitude;
+
+    boolean isEmergency = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        init();
+        findviews();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    void init() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             // Create channel to show notifications.
             String channelId = getString(R.string.default_notification_channel_id);
@@ -64,19 +96,15 @@ public class MainActivity extends AppCompatActivity {
             main_nt_textview.setText(num1);
         }
         // [END handle_data_extras]
+    }
 
-        Button subscribeButton = findViewById(R.id.subscribeButton);
-        subscribeButton.setOnClickListener(new View.OnClickListener() {
+    void findviews() {
+        button_gps = (Button) findViewById(R.id.button_gps);
+        button_gps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // [START subscribe_topics]
-                FirebaseMessaging.getInstance().subscribeToTopic("news2");
-                // [END subscribe_topics]
-
-                // Log and toast
-                String msg = getString(R.string.msg_subscribed);
-                Log.d(TAG, msg);
-                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(MainActivity.this, GPS_Service.class);
+                startService(i);
             }
         });
 
@@ -84,51 +112,163 @@ public class MainActivity extends AppCompatActivity {
         logTokenButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Get token
-                token = FirebaseInstanceId.getInstance().getToken();
+                sendTokenHttp();
+            }
+        });
 
-                // Log and toast
-                String msg = getString(R.string.msg_token_fmt, token);
-                Log.d(TAG, msg);
-                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
-//                fecMOTOriSA:APA91bH8tVJb055m0g_TbmkNEUI9_CVFQ-jLC8henZQxFJMwEmCzGLHsy1ErAAXUtowvRqzj1-MQIIcqnzEMz3U39ezkeOu5G_AaP660dIqc9ns9c10Bz7sRQMLje37jcxNhblj9eUke
+        button_timer_start = (Button) findViewById(R.id.button_timer_start);
+        button_timer_start.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, Timer.class);
+                startService(intent);
+            }
+        });
 
-//                FirebaseMessaging fm = FirebaseMessaging.getInstance();
-//                fm.send(new RemoteMessage.Builder(msg + "@gcm.googleapis.com")
-////        fm.send(new RemoteMessage.Builder(SENDER_ID + "@gcm.googleapis.com")
-////                .setMessageId(Integer.toString(msgId.incrementAndGet()))
-//                        .setMessageId(Integer.toString(0))
-//                        .addData("my_message", "Hello World")
-//                        .addData("my_action","SAY_HELLO")
-//                        .build());
+        button_timer_end = (Button) findViewById(R.id.button_timer_end);
+        button_timer_end.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, Timer.class);
+                stopService(intent);
+            }
+        });
 
-                new Thread() {
-                    public void run() {
-                        OkHttpClient client = new OkHttpClient();
+        button_emergecy = (Button) findViewById(R.id.button_emergency);
+        button_emergecy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, GPS_Service.class);
+                startService(intent);
+
+                isEmergency = true;
+//                sendEmergency("ddd@gmail.com");
+            }
+        });
+
+        textView = (TextView) findViewById(R.id.textView);
+
+    }
+
+    void sendTokenHttp() {
+        // Get token
+        token = FirebaseInstanceId.getInstance().getToken();
+
+        // Log and toast
+        String msg = getString(R.string.msg_token_fmt, token);
+        Log.d(TAG, msg);
+        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+
+        new Thread() {
+            public void run() {
+                OkHttpClient client = new OkHttpClient();
 //                     RequestBody body = new FormBody.Builder()
 //                             .add("Token", FirebaseInstanceId.getInstance().getToken())
 //                             .build();
 
-                        RequestBody body = RequestBody.create(JSON, "{\"token\": \"" + token + "\"}");
-                        Log.d(TAG, "Body : " + body);
+                RequestBody body = RequestBody.create(JSON, "{\"token\": \"" + token + "\"}");
+                Log.d(TAG, "Body : " + body);
 
-                        Request request = new Request.Builder()
-                                .url("https://pure-depths-50816.herokuapp.com/user/emergency")
-                                .post(body)
-                                .build();
+                Request request = new Request.Builder()
+                        .url("https://pure-depths-50816.herokuapp.com/user/emergency")
+                        .post(body)
+                        .build();
 
-                        try {
-//                         Log.d(TAG, "before execute");
-                            client.newCall(request).execute();
-//                         Log.d(TAG, "after execute");
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }.start();
+                try {
+                    client.newCall(request).execute();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-        });
+        }.start();
     }
 
+    void sendEmergency(final String email) {
+        Toast.makeText(MainActivity.this, "Emerg longitude : " + String.valueOf(longitude) + "latitude : " + String.valueOf(latitude), Toast.LENGTH_SHORT).show();
 
+        new Thread() {
+            public void run() {
+                OkHttpClient client = new OkHttpClient();
+
+                RequestBody body = RequestBody.create(JSON, "{\"email\": \"" + email + "\"}," +
+                        "{\"longitude\": \"" + longitude + "\"}," +
+                        "{\"latitude\": \"" + latitude + "\"}");
+                Log.d(TAG, "Emergency Body : " + body);
+
+                Request request = new Request.Builder()
+                        .url("https://pure-depths-50816.herokuapp.com/user/emergency")
+                        .post(body)
+                        .build();
+
+                try {
+                    client.newCall(request).execute();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+
+
+//        Intent intent = new Intent(MainActivity.this, GPS_Service.class);
+//        stopService(intent);
+    }
+
+    private BroadcastReceiver broadcastReceiver;
+
+    @Override
+    protected void onResume() {
+        PermissionCheck();
+
+        super.onResume();
+        if (broadcastReceiver == null) {
+            broadcastReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+
+                    textView.append("\n" + intent.getExtras().get("longitude") + " " + intent.getExtras().get("latitude"));
+                    Log.d("broadcast: longitude", String.valueOf(intent.getExtras().get("longitude")));
+                    Log.d("broadcast: latitude", String.valueOf(intent.getExtras().get("latitude")));
+
+                    longitude = (double) intent.getExtras().get("longitude");
+                    latitude = (double) intent.getExtras().get("latitude");
+
+                    Toast.makeText(MainActivity.this, "BC longitude : " + String.valueOf(longitude) + "latitude : " + String.valueOf(latitude), Toast.LENGTH_SHORT).show();
+
+                    if (isEmergency) {
+                        isEmergency = false;
+                        sendEmergency("sss@gmail.com");
+                        Intent i = new Intent(MainActivity.this, GPS_Service.class);
+                        stopService(i);
+                    }
+                }
+            };
+        }
+        registerReceiver(broadcastReceiver, new IntentFilter("location_update"));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (broadcastReceiver != null) {
+            unregisterReceiver(broadcastReceiver);
+        }
+    }
+
+    private void PermissionCheck() {
+        int permission_fine_location = ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
+        int permission_coarse_location = ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION);
+        int permission_internet = ActivityCompat.checkSelfPermission(this, android.Manifest.permission.INTERNET);
+        if (permission_fine_location == PackageManager.PERMISSION_DENIED) {
+
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_FINE);
+        }
+
+        if (permission_coarse_location == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_COARSE);
+        }
+
+        if (permission_internet == PackageManager.PERMISSION_DENIED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_INTERNET);
+        }
+    }
 }

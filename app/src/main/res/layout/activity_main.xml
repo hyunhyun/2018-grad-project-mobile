@@ -20,13 +20,13 @@
         android:gravity="center_horizontal"
         android:text="quickstart_message" />
 
-    <Button
-        android:id="@+id/subscribeButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"
-        android:text="subscribe_to_news" />
+    <!--<Button-->
+    <!--android:id="@+id/subscribeButton"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_gravity="center_horizontal"-->
+    <!--android:layout_marginTop="20dp"-->
+    <!--android:text="subscribe_to_news" />-->
 
     <Button
         android:id="@+id/logTokenButton"
@@ -40,4 +40,32 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <Button
+        android:id="@+id/button_gps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="send GPS" />
+
+    <Button
+        android:id="@+id/button_timer_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Timer Start" />
+
+    <Button
+        android:id="@+id/button_timer_end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Timer End" />
+
+    <Button
+        android:id="@+id/button_emergency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Emergency" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 </LinearLayout>
