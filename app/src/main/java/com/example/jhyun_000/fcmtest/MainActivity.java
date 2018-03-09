@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -25,6 +27,7 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 
 //import com.google.firebase.iid.FirebaseInstanceId;
 
@@ -49,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
     double latitude;
 
     boolean isEmergency = false;
+    MyDBHandler myDBHandler;
+    SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
 
         init();
         findviews();
+
+        myDBHandler = new MyDBHandler(this, null, null, 1);
+        db = myDBHandler.getWritableDatabase();
     }
 
     @Override
@@ -131,6 +139,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, Timer.class);
                 stopService(intent);
+
+                MyDBHandler myDBHandler = new MyDBHandler(getApplicationContext(), null, null, 1);
             }
         });
 
@@ -190,9 +200,9 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 OkHttpClient client = new OkHttpClient();
 
-                RequestBody body = RequestBody.create(JSON, "{\"email\": \"" + email + "\"}," +
-                        "{\"longitude\": \"" + longitude + "\"}," +
-                        "{\"latitude\": \"" + latitude + "\"}");
+                RequestBody body = RequestBody.create(JSON, "{\"email\": \"" + email + "\"," +
+                        "\"locations\":[ " +
+                        "{\"longitude\": \": \"" + longitude + "\", \"latitude\": \"" + latitude + "\"}]}");
                 Log.d(TAG, "Emergency Body : " + body);
 
                 Request request = new Request.Builder()
@@ -208,9 +218,65 @@ public class MainActivity extends AppCompatActivity {
             }
         }.start();
 
+//        MyDBHandler dbHandler = new MyDBHandler(this, null, null, 1);
+        Cursor cursor = myDBHandler.findAll();
+        String Jsonarray = "";
+        if (cursor.moveToFirst()) {
+            String longitude = cursor.getString(1);
+            String latitude = cursor.getString(2);
 
-//        Intent intent = new Intent(MainActivity.this, GPS_Service.class);
-//        stopService(intent);
+            Jsonarray += "{\"locations\":[ " + "{\"longitude\": \": \"" + longitude + "\", \"latitude\": \"" + latitude + "\"}}";
+        }
+
+        while (cursor.moveToNext()) {
+//            cursor.getString(0);
+            String longitude = cursor.getString(1);
+            String latitude = cursor.getString(2);
+
+            Jsonarray += ", {\"longitude\": \": \"" + longitude + "\", \"latitude\": \"" + latitude + "\"}}";
+        }
+        Jsonarray += "]}";
+
+
+        //이걸 server로 보내야함
+        final String finalJsonarray = Jsonarray;
+        new Thread() {
+            public void run() {
+                OkHttpClient client = new OkHttpClient();
+
+                RequestBody body = RequestBody.create(JSON, finalJsonarray);
+                Log.d(TAG, "Emergency Body : " + body);
+
+                Request request = new Request.Builder()
+                        .url("https://pure-depths-50816.herokuapp.com/user/emergency")
+                        .post(body)
+                        .build();
+
+                try {
+                    client.newCall(request).execute();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                Response response = null;
+                try {
+                    response = client.newCall(request).execute();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    Log.d("Response", response.body().string());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+        }.start();
+
+
+        Log.d("Jsonarray", Jsonarray);
     }
 
     private BroadcastReceiver broadcastReceiver;

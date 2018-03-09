@@ -95,12 +95,13 @@ public class GPS_Service extends Service {
                 Log.d("Service: Longitude", String.valueOf(longitude));
                 Log.d("Service: Latitude", String.valueOf(latitude));
                 Intent i = new Intent("location_update");
-//                i.putExtra("coordinates", location.getLongitude() + " " + location.getLatitude());
                 i.putExtra("longitude", location.getLongitude());
                 i.putExtra("latitude", location.getLatitude());
                 sendBroadcast(i);
 
-//                Toast.makeText(getApplicationContext(), "Longitude"+String.valueOf(location.getLongitude()), LENGTH_SHORT);
+                TrackLocation loc = new TrackLocation(location.getLongitude(), location.getLatitude());
+                MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(), null, null, 1);
+                dbHandler.addLocation(loc);
             }
 
             @Override
@@ -168,6 +169,4 @@ public class GPS_Service extends Service {
             ActivityCompat.requestPermissions((Activity) getApplicationContext(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_INTERNET);
         }
     }
-
-
 }
