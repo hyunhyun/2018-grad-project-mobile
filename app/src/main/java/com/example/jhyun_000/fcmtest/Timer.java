@@ -32,7 +32,7 @@ public class Timer extends Service {
 
         super.onCreate();
 
-        Log.d("TImer", "OnCreate");
+        Log.d("Timer", "OnCreate");
         registerTimer();
         countDownTimer.start();
 
@@ -52,7 +52,9 @@ public class Timer extends Service {
 
             @Override
             public void onFinish() {
-//                sendMsgToActivity(longitude, latitude);
+//                sendMsgToActivity(longitude, latitude);\
+                MyDBHandler dbHandler = new MyDBHandler(getApplicationContext(), null, null, 1);
+                dbHandler.deleteAll();
             }
         };
 
@@ -75,7 +77,7 @@ public class Timer extends Service {
             mNotificationManager.createNotificationChannel(mChannel);
         }
 
-        Intent intent = new Intent(Timer.this, TimerActionReceiver.class);
+        Intent intent = new Intent(Timer.this, TimerActionActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(Timer.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 

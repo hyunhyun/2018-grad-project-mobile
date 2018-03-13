@@ -141,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
                 stopService(intent);
 
                 MyDBHandler myDBHandler = new MyDBHandler(getApplicationContext(), null, null, 1);
+                myDBHandler.deleteAll();
             }
         });
 
@@ -202,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
 
                 RequestBody body = RequestBody.create(JSON, "{\"email\": \"" + email + "\"," +
                         "\"locations\":[ " +
-                        "{\"longitude\": \": \"" + longitude + "\", \"latitude\": \"" + latitude + "\"}]}");
+                        "{\"longitude\": \"" + longitude + "\", \"latitude\": \"" + latitude + "\"}]}");
                 Log.d(TAG, "Emergency Body : " + body);
 
                 Request request = new Request.Builder()
@@ -220,12 +221,14 @@ public class MainActivity extends AppCompatActivity {
 
 //        MyDBHandler dbHandler = new MyDBHandler(this, null, null, 1);
         Cursor cursor = myDBHandler.findAll();
-        String Jsonarray = "";
+//        String Jsonarray = "";
+        String Jsonarray = "{\"email\": \"" + email + "\"," +
+                "\"currentlocations\": {\"longitude\": \"" + longitude + "\", \"latitude\": \"" + latitude + "\"}, ";
         if (cursor.moveToFirst()) {
             String longitude = cursor.getString(1);
             String latitude = cursor.getString(2);
 
-            Jsonarray += "{\"locations\":[ " + "{\"longitude\": \": \"" + longitude + "\", \"latitude\": \"" + latitude + "\"}}";
+            Jsonarray += "\"locations\":[ " + "{\"longitude\": \"" + longitude + "\", \"latitude\": \"" + latitude + "\"}";
         }
 
         while (cursor.moveToNext()) {
@@ -233,10 +236,11 @@ public class MainActivity extends AppCompatActivity {
             String longitude = cursor.getString(1);
             String latitude = cursor.getString(2);
 
-            Jsonarray += ", {\"longitude\": \": \"" + longitude + "\", \"latitude\": \"" + latitude + "\"}}";
+            Jsonarray += ", {\"longitude\": \": \"" + longitude + "\", \"latitude\": \"" + latitude + "\"}";
         }
         Jsonarray += "]}";
 
+        Log.d("Jsonarray", Jsonarray);
 
         //이걸 server로 보내야함
         final String finalJsonarray = Jsonarray;

@@ -23,9 +23,10 @@ public class NotificationActivity extends AppCompatActivity {
 
         if (getIntent().getExtras() != null) {
             num1 = getIntent().getExtras().get("num1").toString();
-            num2 = getIntent().getExtras().get("num2").toString();
-
-            nt_textview.setText("num1 : " + num1 + ", num2 : " + num2);
+//            num2 = getIntent().getExtras().get("num2").toString();
+//
+//            nt_textview.setText("num1 : " + num1 + ", num2 : " + num2);
+            nt_textview.setText("num1 : " + num1);
         }
     }
 }

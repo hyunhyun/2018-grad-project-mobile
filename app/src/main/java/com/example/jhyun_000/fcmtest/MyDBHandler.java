@@ -64,4 +64,22 @@ public class MyDBHandler extends SQLiteOpenHelper {
         return db.rawQuery(query, null);
     }
 
+    public void dropTable() {
+        boolean result = false;
+        String query = "DROP TABLE IF EXISTS " + DATABASE_TABLE;
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL(query);
+        db.close();
+    }
+
+    public void deleteAll() {
+        boolean result = false;
+//        String query = "DELETE * FROM "+DATABASE_TABLE;
+        SQLiteDatabase db = this.getWritableDatabase();
+//        db.execSQL(query);
+        db.delete(DATABASE_TABLE, null, null);
+        db.close();
+        //db.delete return int number of rows affected
+    }
+
 }
