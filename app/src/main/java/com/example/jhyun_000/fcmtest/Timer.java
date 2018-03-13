@@ -21,14 +21,9 @@ import android.util.Log;
 public class Timer extends Service {
     CountDownTimer countDownTimer;
     NotificationManager mNotificationManager;
-    public static final String NOTIFICATION_CHANNEL_ID = "4655";
-    //    public final String NOTIFICATION_CHANNEL_ID = getString(R.string.default_notification_channel_id);
-    public static final String NOTIFICATION_CHANNEL_NAME = "Name";
-//    public final String NOTIFICATION_CHANNEL_NAME = getString(R.string.default_notification_channel_name);
 
     @Override
     public void onCreate() {
-
 
         super.onCreate();
 
@@ -43,10 +38,7 @@ public class Timer extends Service {
         countDownTimer = new CountDownTimer(1000000, 4000) {
             @Override
             public void onTick(long millisUntilFinished) {
-//                sendMsgToActivity(longitude, latitude);
                 Log.d("Timer", String.valueOf(millisUntilFinished));
-//                Log.d("Timer : longitude", String.valueOf(longitude));
-//                Log.d("Timer : latitude", String.valueOf(latitude));
                 sendNotification("Timer tick");
             }
 
@@ -64,9 +56,9 @@ public class Timer extends Service {
     private void sendNotification(String messageBody) {
         if (Build.VERSION.SDK_INT >= 26) {
             mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            CharSequence name = NOTIFICATION_CHANNEL_NAME;
+            CharSequence name = getString(R.string.timer_notification_channel_name);
             int importance = NotificationManager.IMPORTANCE_LOW;
-            NotificationChannel mChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, name, importance);
+            NotificationChannel mChannel = new NotificationChannel(getString(R.string.timer_notification_channel_id), name, importance);
 // Configure the notification channel.
             mChannel.enableLights(true);
 // Sets the notification light color for notifications posted to this
@@ -86,13 +78,13 @@ public class Timer extends Service {
                 .setContentText("You've received new messages.")
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setContentIntent(pendingIntent)
-                .setChannelId(NOTIFICATION_CHANNEL_ID)
+                .setChannelId(getString(R.string.timer_notification_channel_id))
                 .build();
 
         //sdk Min 26이상부터 setChannelId 함수가능
         //원래 MinSdk 14였는데 26으로 고침
 
-        mNotificationManager.notify(Integer.parseInt(NOTIFICATION_CHANNEL_ID), notification);
+        mNotificationManager.notify(Integer.parseInt(getString(R.string.timer_notification_channel_id)), notification);
         Log.d("Timer", "SendNotification End");
     }
 
