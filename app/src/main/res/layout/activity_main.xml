@@ -12,6 +12,26 @@
     <!--android:layout_gravity="center_horizontal"-->
     <!--android:src="@drawable/firebase_lockup_400" />-->
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/login_page_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="login" />
+
+        <Button
+            android:id="@+id/face_register_page_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="face-register" />
+
+
+    </LinearLayout>
+
     <TextView
         android:id="@+id/informationTextView"
         android:layout_width="wrap_content"
@@ -45,6 +65,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="send GPS" />
+
+    <EditText
+        android:id="@+id/timer_expire_edittext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/timer_interval_edittext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <Button
         android:id="@+id/button_timer_start"

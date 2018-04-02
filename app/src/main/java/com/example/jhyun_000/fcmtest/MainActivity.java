@@ -13,12 +13,17 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.io.IOException;
@@ -32,6 +37,7 @@ import okhttp3.Response;
 //import com.google.firebase.iid.FirebaseInstanceId;
 
 //import com.google.firebase.iid.FirebaseInstanceId;
+import static com.example.jhyun_000.fcmtest.EmailPasswordActivity.user_email;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Token";
@@ -47,6 +53,10 @@ public class MainActivity extends AppCompatActivity {
     Button button_timer_end;
     Button button_emergecy;
     TextView textView;
+    EditText timer_expire_edittext;
+    EditText timer_interval_edittext;
+    Button login_page_button;
+    Button face_register_page_button;
 
     double longitude;
     double latitude;
@@ -54,6 +64,11 @@ public class MainActivity extends AppCompatActivity {
     boolean isEmergency = false;
     MyDBHandler myDBHandler;
     SQLiteDatabase db;
+
+    public int timer_expire;
+    public int timer_interval;
+
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,11 +80,18 @@ public class MainActivity extends AppCompatActivity {
 
         myDBHandler = new MyDBHandler(this, null, null, 1);
         db = myDBHandler.getWritableDatabase();
+
+        mAuth = FirebaseAuth.getInstance();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        FirebaseUser user = mAuth.getCurrentUser();
+        user_email = user.getEmail();
+
+        Toast.makeText(this, user_email, Toast.LENGTH_SHORT).show();
     }
 
     void init() {
@@ -81,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
                     getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(new NotificationChannel(channelId,
                     channelName, NotificationManager.IMPORTANCE_LOW));
+
         }
 
         // If a notification message is tapped, any data accompanying the notification
@@ -124,6 +147,57 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        timer_expire_edittext = (EditText) findViewById(R.id.timer_expire_edittext);
+        timer_interval_edittext = (EditText) findViewById(R.id.timer_interval_edittext);
+
+        timer_expire_edittext.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//                start 지점에서 시작되는 count 갯수만큼의 글자들이 after 길이만큼의 글자로 대치되려고 할 때 호출된다
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                start 지점에서 시작되는 before 갯수만큼의 글자들이 count 갯수만큼의 글자들로 대치되었을 때 호출된다
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+//                EditText의 텍스트가 변경되면 호출된다
+                String str = s.toString();
+                if (str.length() > 0) {
+                    timer_expire = Integer.valueOf(str);
+                    button_timer_start.setEnabled(true);
+                } else {
+                    button_timer_start.setEnabled(false);
+                }
+            }
+        });
+
+        timer_interval_edittext.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//                start 지점에서 시작되는 count 갯수만큼의 글자들이 after 길이만큼의 글자로 대치되려고 할 때 호출된다
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                start 지점에서 시작되는 before 갯수만큼의 글자들이 count 갯수만큼의 글자들로 대치되었을 때 호출된다
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+//                EditText의 텍스트가 변경되면 호출된다
+                String str = s.toString();
+                if (str.length() > 0) {
+                    timer_interval = Integer.valueOf(str);
+                    button_timer_start.setEnabled(true);
+                } else {
+                    button_timer_start.setEnabled(false);
+                }
+            }
+        });
+
         button_timer_start = (Button) findViewById(R.id.button_timer_start);
         button_timer_start.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -158,12 +232,32 @@ public class MainActivity extends AppCompatActivity {
         });
 
         textView = (TextView) findViewById(R.id.textView);
+        login_page_button = (Button) findViewById(R.id.login_page_button);
+        face_register_page_button = (Button) findViewById(R.id.face_register_page_button);
+
+        login_page_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, EmailPasswordActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        face_register_page_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, FaceRegister.class);
+                startActivity(intent);
+            }
+        });
 
     }
 
     void sendTokenHttp() {
         // Get token
         token = FirebaseInstanceId.getInstance().getToken();
+
+        //Nexus 5X 26 token: eEkA4fDyEKQ:APA91bG6wK8W4hu2BjJoTMpPPWAZakySNVpSEHF4OJLHayJxKgo1pt30YO29SKH9w_hqZbbSD21K6zgTaP7rg7PJinmBz4vxIGUbmeMTYP6Kt7XqFDe9iUA0mbjdLfPi1tcV832KBUsa
 
         // Log and toast
         String msg = getString(R.string.msg_token_fmt, token);

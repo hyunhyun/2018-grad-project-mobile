@@ -54,11 +54,20 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             sendNotification(remoteMessage.getData().get("message"));
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
 
-            String click_action = remoteMessage.getNotification().getClickAction();
-            Intent intent = new Intent(click_action);
+
+            if (remoteMessage.getNotification().getTag().toString().equals("SHOW_LIST")) {
+                String click_action = remoteMessage.getNotification().getClickAction();
+                Intent intent = new Intent(click_action);
 //            Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("num1", remoteMessage.getData().toString());
-            startActivity(intent);
+                intent.putExtra("num1", remoteMessage.getData().toString());
+                startActivity(intent);
+            } else {
+//                String click_action = remoteMessage.getNotification().getClickAction();
+//                Intent intent = new Intent(click_action);
+////            Intent intent = new Intent(this, MainActivity.class);
+//                intent.putExtra("num1", remoteMessage.getData().toString());
+//                startActivity(intent);
+            }
 
             if (/* Check if data needs to be processed by long running job */ true) {
                 // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
