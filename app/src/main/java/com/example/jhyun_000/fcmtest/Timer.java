@@ -19,7 +19,7 @@ import android.util.Log;
  */
 
 public class Timer extends Service {
-    CountDownTimer countDownTimer;
+    public static CountDownTimer countDownTimer;
     NotificationManager mNotificationManager;
 
     @Override
@@ -74,8 +74,8 @@ public class Timer extends Service {
 
 
         Notification notification = new Notification.Builder(getApplicationContext())
-                .setContentTitle("New Message")
-                .setContentText("You've received new messages.")
+                .setContentTitle("Timer")
+                .setContentText("Timer")
                 .setSmallIcon(R.drawable.ic_launcher_background)
                 .setContentIntent(pendingIntent)
                 .setChannelId(getString(R.string.timer_notification_channel_id))
@@ -92,5 +92,13 @@ public class Timer extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        countDownTimer.cancel();
+        Log.d("Timer", "timer canceled");
     }
 }

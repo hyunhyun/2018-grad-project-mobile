@@ -51,22 +51,33 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             //foreground process 위해 추가
 //            sendNotification이 호출되지 않음에도 백그라운드에서 알림이 표시되는 이유는?
 //            그건 "알림 메시지"을 처리하는 주체가 안드로이드 운영체제이기 때문이다.
-            sendNotification(remoteMessage.getData().get("message"));
+            sendNotification(remoteMessage.getNotification().getTitle(), remoteMessage.getData().get("message"));
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
 
 
-            if (remoteMessage.getNotification().getTag().toString().equals("SHOW_LIST")) {
-                String click_action = remoteMessage.getNotification().getClickAction();
-                Intent intent = new Intent(click_action);
-//            Intent intent = new Intent(this, MainActivity.class);
-                intent.putExtra("num1", remoteMessage.getData().toString());
-                startActivity(intent);
-            } else {
+//            if (remoteMessage.getNotification().getTag().toString().equals("SHOW_LIST")) {
 //                String click_action = remoteMessage.getNotification().getClickAction();
-//                Intent intent = new Intent(click_action);
+//                Intent intent = new Intent("OPEN");
 ////            Intent intent = new Intent(this, MainActivity.class);
 //                intent.putExtra("num1", remoteMessage.getData().toString());
 //                startActivity(intent);
+//            }
+            if (remoteMessage.getNotification().getTag().toString().equals("SHOW_VISITOR")) {
+                String click_action = remoteMessage.getNotification().getClickAction();
+//                Intent intent = new Intent(click_action);
+                Intent intent = new Intent(this, ViewVisitor.class);
+////            Intent intent = new Intent(this, MainActivity.class);
+//                String urls[]={"jojo-gmail-com/user/a86d0a71-5152-4a09-a9f4-880acc661008.jpg"};
+//                String uuid[]={"a86d0a71-5152-4a09-a9f4-880acc661008"};
+                String uuid = remoteMessage.getData().get("uuid");
+                String result = remoteMessage.getData().get("result");
+
+                intent.putExtra("uuids", uuid);
+                intent.putExtra("result", result);
+                startActivity(intent);
+            } else if (remoteMessage.getNotification().getTag().toString().equals("SHOW_USER")) {
+                Intent intent = new Intent(this, ViewUser.class);
+                startActivity(intent);
             }
 
             if (/* Check if data needs to be processed by long running job */ true) {
@@ -82,7 +93,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
             //sendNorification 호출 추가 - foreground
-            sendNotification(remoteMessage.getNotification().getBody());
+            sendNotification(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getBody());
 
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
         }
@@ -118,7 +129,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      *
      * @param messageBody FCM message body received.
      */
-    private void sendNotification(String messageBody) {
+    private void sendNotification(String title, String messageBody) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
@@ -129,7 +140,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
                         .setSmallIcon(R.drawable.ic_stat_ic_notification)
-                        .setContentTitle("FCM Message")
+                        .setContentTitle(title)
                         .setContentText(messageBody)
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)
@@ -140,4 +151,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
     }
+
+
 }

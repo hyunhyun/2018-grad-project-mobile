@@ -12,6 +12,18 @@
     <!--android:layout_gravity="center_horizontal"-->
     <!--android:src="@drawable/firebase_lockup_400" />-->
 
+    <Button
+        android:id="@+id/log_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="log_Button" />
+
+    <Button
+        android:id="@+id/button_visitor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="visitor" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -69,12 +81,14 @@
     <EditText
         android:id="@+id/timer_expire_edittext"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:hint="expire time" />
 
     <EditText
         android:id="@+id/timer_interval_edittext"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:hint="interval time" />
 
     <Button
         android:id="@+id/button_timer_start"

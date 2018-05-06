@@ -34,10 +34,11 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-//import com.google.firebase.iid.FirebaseInstanceId;
+import static com.example.jhyun_000.fcmtest.EmailPasswordActivity.user_email;
 
 //import com.google.firebase.iid.FirebaseInstanceId;
-import static com.example.jhyun_000.fcmtest.EmailPasswordActivity.user_email;
+//import com.google.firebase.iid.FirebaseInstanceId;
+
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Token";
@@ -57,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
     EditText timer_interval_edittext;
     Button login_page_button;
     Button face_register_page_button;
+    Button log_button;
+    Button button_visitor;
 
     double longitude;
     double latitude;
@@ -82,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         db = myDBHandler.getWritableDatabase();
 
         mAuth = FirebaseAuth.getInstance();
+
     }
 
     @Override
@@ -223,10 +227,14 @@ public class MainActivity extends AppCompatActivity {
         button_emergecy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, GPS_Service.class);
-                startService(intent);
+//                Intent intent = new Intent(MainActivity.this, GPS_Service.class);
+//                startService(intent);
+//
+//                isEmergency = true;
 
-                isEmergency = true;
+                Intent intent = new Intent(MainActivity.this, EmergencyActivity.class);
+                startActivity(intent);
+
 //                sendEmergency("ddd@gmail.com");
             }
         });
@@ -250,6 +258,29 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        log_button = (Button) findViewById(R.id.log_button);
+        log_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, LogActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        button_visitor = (Button) findViewById(R.id.button_visitor);
+        button_visitor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ViewVisitor.class);
+                String uuid[] = {"a86d0a71-5152-4a09-a9f4-880acc661008"};
+                String result[] = {"friend"};
+                intent.putExtra("uuids", uuid);
+                intent.putExtra("result", result);
+                startActivity(intent);
+            }
+        });
+
 
     }
 
@@ -291,46 +322,27 @@ public class MainActivity extends AppCompatActivity {
     void sendEmergency(final String email) {
         Toast.makeText(MainActivity.this, "Emerg longitude : " + String.valueOf(longitude) + "latitude : " + String.valueOf(latitude), Toast.LENGTH_SHORT).show();
 
-        new Thread() {
-            public void run() {
-                OkHttpClient client = new OkHttpClient();
-
-                RequestBody body = RequestBody.create(JSON, "{\"email\": \"" + email + "\"," +
-                        "\"locations\":[ " +
-                        "{\"longitude\": \"" + longitude + "\", \"latitude\": \"" + latitude + "\"}]}");
-                Log.d(TAG, "Emergency Body : " + body);
-
-                Request request = new Request.Builder()
-                        .url("https://pure-depths-50816.herokuapp.com/user/emergency")
-                        .post(body)
-                        .build();
-
-                try {
-                    client.newCall(request).execute();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }.start();
-
-//        MyDBHandler dbHandler = new MyDBHandler(this, null, null, 1);
         Cursor cursor = myDBHandler.findAll();
-//        String Jsonarray = "";
         String Jsonarray = "{\"email\": \"" + email + "\"," +
-                "\"currentlocations\": {\"longitude\": \"" + longitude + "\", \"latitude\": \"" + latitude + "\"}, ";
+                "\"current_location\": {\"longitude\": " + longitude + ", \"latitude\": " + latitude + "}, ";
         if (cursor.moveToFirst()) {
-            String longitude = cursor.getString(1);
-            String latitude = cursor.getString(2);
+//            String longitude = cursor.getString(1);
+//            String latitude = cursor.getString(2);
+            double longitude = cursor.getDouble(1);
+            double latitude = cursor.getDouble(2);
 
-            Jsonarray += "\"locations\":[ " + "{\"longitude\": \"" + longitude + "\", \"latitude\": \"" + latitude + "\"}";
+            Jsonarray += "\"locations\":[ " + "{\"longitude\": " + longitude + ", \"latitude\": " + latitude + "}";
         }
 
         while (cursor.moveToNext()) {
 //            cursor.getString(0);
-            String longitude = cursor.getString(1);
-            String latitude = cursor.getString(2);
-
-            Jsonarray += ", {\"longitude\": \": \"" + longitude + "\", \"latitude\": \"" + latitude + "\"}";
+//            String longitude = cursor.getString(1);
+//            String latitude = cursor.getString(2);
+            double longitude = cursor.getDouble(1);
+            double latitude = cursor.getDouble(2);
+            Log.i("cursor", "longitude is : " + longitude + " latitude is : " + latitude);
+//            if (longitude != null && latitude != null)
+            Jsonarray += ", {\"longitude\" : " + longitude + ", \"latitude\": " + latitude + "}";
         }
         Jsonarray += "]}";
 
@@ -346,15 +358,16 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "Emergency Body : " + body);
 
                 Request request = new Request.Builder()
-                        .url("https://pure-depths-50816.herokuapp.com/user/emergency")
+//                        .url("http://grad-project-app.herokuapp.com/user/emergency")
+                        .url(getString(R.string.server_url_emergency))
                         .post(body)
                         .build();
 
-                try {
-                    client.newCall(request).execute();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    client.newCall(request).execute();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
 
                 Response response = null;
                 try {
@@ -369,13 +382,11 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-
             }
         }.start();
-
-
         Log.d("Jsonarray", Jsonarray);
     }
+
 
     private BroadcastReceiver broadcastReceiver;
 
@@ -400,7 +411,7 @@ public class MainActivity extends AppCompatActivity {
 
                     if (isEmergency) {
                         isEmergency = false;
-                        sendEmergency("sss@gmail.com");
+                        sendEmergency(user_email);
                         Intent i = new Intent(MainActivity.this, GPS_Service.class);
                         stopService(i);
                     }

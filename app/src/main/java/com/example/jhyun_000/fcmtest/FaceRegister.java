@@ -243,12 +243,27 @@ public class FaceRegister extends AppCompatActivity {
 
     public void uploadWithTransferUtility(Uri uri, String uuid) {
 
+        String replaced = user_email.replaceAll("[@.]", "-");
+        final String madeKey = replaced + "/user/" + uuid + ".jpg";
+
+//        final AmazonS3Client s3client = new AmazonS3Client(AWSMobileClient.getInstance().getCredentialsProvider());
+//        s3client.setObjectAcl("androidprojectapp-userfiles-mobilehub-1711223959", madeKey, CannedAccessControlList.PublicRead);
+//        AccessControlList acl = new AccessControlList();
+//        acl.grantPermission(CannedAccessControlList.PublicRead);
+
+
+//        AmazonS3Client s3Clcient = new AmazonS3Client();
+
         TransferUtility transferUtility =
                 TransferUtility.builder()
                         .context(getApplicationContext())
                         .awsConfiguration(AWSMobileClient.getInstance().getConfiguration())
+//                        .s3Client(new AmazonS3Client(AWSMobileClient.getInstance().getCredentialsProvider()))
                         .s3Client(new AmazonS3Client(AWSMobileClient.getInstance().getCredentialsProvider()))
+//                        .s3Client(s3client)
                         .build();
+
+//        .setObjectAcl("androidprojectapp-userfiles-mobilehub-1711223959", madeKey, CannedAccessControlList.PublicRead)
 
         String realPath;
         // SDK < API11
@@ -266,20 +281,24 @@ public class FaceRegister extends AppCompatActivity {
 //        Toast.makeText(this, user_email, Toast.LENGTH_SHORT).show();
 //        String replaced = user_email.replace("@.", "-");
 //        String replaced = user_email.replace("[@.]", "-");
-        String replaced = user_email.replaceAll("[@.]", "-");
-        String madeKey = replaced + "/user/" + uuid + ".jpg";
+//        String replaced = user_email.replaceAll("[@.]", "-");
+//        String madeKey = replaced + "/user/" + uuid + ".jpg";
         Toast.makeText(this, madeKey, Toast.LENGTH_SHORT).show();
 
         TransferObserver uploadObserver =
-                transferUtility.upload(
-//                        "uploads/"+name+".jpg",
-//                        user_email+"/user/"+uuid+".jpg",
-                        madeKey,
-//                        "uploads/"+uuid+".jpg",
-//                        new File("/path/to/file/localFile.txt"));
-//                        new File(uri.getPath()));
-//                        new File(getRealPathFromURI(uri)));
-                        new File(realPath));
+//                transferUtility.upload(
+////                        "uploads/"+name+".jpg",
+////                        user_email+"/user/"+uuid+".jpg",
+//                        madeKey,
+////                        "uploads/"+uuid+".jpg",
+////                        new File("/path/to/file/localFile.txt"));
+////                        new File(uri.getPath()));
+////                        new File(getRealPathFromURI(uri)));
+//                        new File(realPath));
+////                        new File(realPath),
+////                        CannedAccessControlList.PublicRead);
+//                transferUtility.upload("androidprojectapp-userfiles-mobilehub-1711223959", madeKey, new File(realPath), CannedAccessControlList.PublicRead);
+                transferUtility.upload("androidprojectapp-userfiles-mobilehub-1711223959", madeKey, new File(realPath));
 
         // Attach a listener to the observer to get state update and progress notifications
         uploadObserver.setTransferListener(new TransferListener() {
@@ -288,6 +307,10 @@ public class FaceRegister extends AppCompatActivity {
             public void onStateChanged(int id, TransferState state) {
                 if (TransferState.COMPLETED == state) {
                     // Handle a completed upload.
+//                    Log.i("onstatechanged", "upload completed.");
+//                    s3client.setObjectAcl("androidprojectapp-userfiles-mobilehub-1711223959", madeKey, CannedAccessControlList.PublicRead);
+
+                    sendRegisterHttp(user_email, "user", imageuuids);
                 }
             }
 
@@ -433,7 +456,7 @@ public class FaceRegister extends AppCompatActivity {
                 text2.setText(UUID.randomUUID().toString());
                 text3.setText(UUID.randomUUID().toString());
 
-                sendRegisterHttp(user_email, "user", imageuuids);
+//                sendRegisterHttp(user_email, "user", imageuuids);
 
                 break;
 

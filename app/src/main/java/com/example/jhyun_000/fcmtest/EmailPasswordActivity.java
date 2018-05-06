@@ -135,6 +135,7 @@ public class EmailPasswordActivity extends BaseActivity implements
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             user_email = user.getEmail();
+                            Log.i("user_email", user_email);
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.

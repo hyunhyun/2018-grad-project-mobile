@@ -59,5 +59,7 @@
     <string name="server_url">http://grad-project-app.herokuapp.com</string>
     <string name="server_url_user_register">http://grad-project-app.herokuapp.com/user/register</string>
     <string name="server_url_face_register">http://grad-project-app.herokuapp.com/user/face-register</string>
+    <string name="server_url_emergency">http://grad-project-app.herokuapp.com/user/emergency</string>
+
 
 </resources>
