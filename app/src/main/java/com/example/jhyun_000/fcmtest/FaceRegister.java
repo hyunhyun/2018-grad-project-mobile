@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -448,9 +449,9 @@ public class FaceRegister extends AppCompatActivity {
 //                uploadData(imageuris[1], String.valueOf(0002));
 //                uploadData(imageuris[2], String.valueOf(0003));
 
-                uploadData(imageuris[0], imageuuids[0]);
-                uploadData(imageuris[1], imageuuids[1]);
-                uploadData(imageuris[2], imageuuids[2]);
+//                uploadData(imageuris[0], imageuuids[0]);
+//                uploadData(imageuris[1], imageuuids[1]);
+//                uploadData(imageuris[2], imageuuids[2]);
 
                 text1.setText(imageuuids[0]);
                 text2.setText(imageuuids[1]);
@@ -514,5 +515,32 @@ public class FaceRegister extends AppCompatActivity {
                 }
             }
         }.start();
+    }
+
+
+    public class MyAsyncTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... strings) {
+
+            uploadData(imageuris[0], imageuuids[0]);
+            uploadData(imageuris[1], imageuuids[1]);
+            uploadData(imageuris[2], imageuuids[2]);
+
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+
+        }
+
     }
 }
