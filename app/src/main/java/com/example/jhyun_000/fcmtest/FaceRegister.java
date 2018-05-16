@@ -310,7 +310,7 @@ public class FaceRegister extends AppCompatActivity {
 //                    Log.i("onstatechanged", "upload completed.");
 //                    s3client.setObjectAcl("androidprojectapp-userfiles-mobilehub-1711223959", madeKey, CannedAccessControlList.PublicRead);
 
-                    sendRegisterHttp(user_email, "user", imageuuids);
+//                    sendRegisterHttp(user_email, "user", imageuuids);
                 }
             }
 
@@ -452,9 +452,9 @@ public class FaceRegister extends AppCompatActivity {
                 uploadData(imageuris[1], imageuuids[1]);
                 uploadData(imageuris[2], imageuuids[2]);
 
-                text1.setText(UUID.randomUUID().toString());
-                text2.setText(UUID.randomUUID().toString());
-                text3.setText(UUID.randomUUID().toString());
+                text1.setText(imageuuids[0]);
+                text2.setText(imageuuids[1]);
+                text3.setText(imageuuids[2]);
 
 //                sendRegisterHttp(user_email, "user", imageuuids);
 
@@ -488,7 +488,10 @@ public class FaceRegister extends AppCompatActivity {
                         "{\"email\": \"" + email + "\", \"designation\": \"" + register_type + "\", " +
                                 "\"uuid\" : [" +
                                 "\"" + uuids[0].toString() + "\", \"" + uuids[1].toString() + "\", \"" + uuids[2].toString() + "\"]}");
-                Log.d("sendRegisterHtttp", "Body : " + body);
+                Log.d("sendRegisterHttp", "Body : " + body);
+                Log.d("sendRegisterHttpString", "Body : " + "{\"email\": \"" + email + "\", \"designation\": \"" + register_type + "\", " +
+                        "\"uuid\" : [" +
+                        "\"" + uuids[0].toString() + "\", \"" + uuids[1].toString() + "\", \"" + uuids[2].toString() + "\"]}");
 //                {
 //                    "email" : "jh@mgmailc.om",
 //                    "designation" : "user",

@@ -89,7 +89,11 @@ public class EmergencyActivity extends AppCompatActivity {
 
                     if (isEmergency) {
                         isEmergency = false;
-                        sendEmergency(user_email);
+                        try {
+                            sendEmergency(user_email);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         Intent i = new Intent(EmergencyActivity.this, GPS_Service.class);
                         stopService(i);
                     }
@@ -100,7 +104,7 @@ public class EmergencyActivity extends AppCompatActivity {
     }
 
 
-    void sendEmergency(final String email) {
+    void sendEmergency(final String email) throws IOException {
         Toast.makeText(EmergencyActivity.this, "Emerg longitude : " + String.valueOf(longitude) + "latitude : " + String.valueOf(latitude), Toast.LENGTH_SHORT).show();
 
         Cursor cursor = myDBHandler.findAll();
@@ -156,7 +160,11 @@ public class EmergencyActivity extends AppCompatActivity {
 
             }
         }.start();
+
+//        RequestHttp requestHttp = new RequestHttp();
+//        String response = requestHttp.post("http://grad-project-app.herokuapp.com/user/emergency", Jsonarray);
         Log.d("Jsonarray", Jsonarray);
+//        Log.i("Response", response );
     }
 
     private void PermissionCheck() {

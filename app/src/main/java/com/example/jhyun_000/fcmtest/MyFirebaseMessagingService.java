@@ -75,9 +75,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 intent.putExtra("uuids", uuid);
                 intent.putExtra("result", result);
                 startActivity(intent);
-            } else if (remoteMessage.getNotification().getTag().toString().equals("SHOW_USER")) {
+            } else if (remoteMessage.getNotification().getTag().toString().equals("SHOW_USER")) {       //사용자
+
                 Intent intent = new Intent(this, ViewUser.class);
                 startActivity(intent);
+//                YesNoDialog(getApplicationContext(), "사용자", "귀가 알림을 해제 하시겠습니까?");
+
             }
 
             if (/* Check if data needs to be processed by long running job */ true) {
