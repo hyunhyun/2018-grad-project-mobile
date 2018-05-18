@@ -13,6 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -36,15 +37,16 @@ public class LogActivity extends AppCompatActivity {
     boolean response_get = false;
 
     int length_jarray;
-    String uuid[];
+    String imagePaths[];
     String timestamp[];
     String urls[];
-    int image_location[];
+    String result[];
 
     HttpThread okhttpThread;
 
     Handler handler;
 
+    //순서 : okhttp log요청 -> callback 통해서 parseresponse -> setGrid
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +67,7 @@ public class LogActivity extends AppCompatActivity {
 //                response_get = true;
                 try {
                     parseResponse(resp_string);
-                    Log.i("afterParse", uuid[0]);
+                    Log.i("afterParse", imagePaths[0]);
 
 //                    Message message = null;
 //                    message.what= 1;
@@ -77,12 +79,22 @@ public class LogActivity extends AppCompatActivity {
 
         };
 
-//        try {
-//            sendLogHttp(user_email);
-////            this.onStart();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        int return_parseResponse = 0;
+        try {
+            return_parseResponse = parseResponse(sendLogHttp(user_email));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } finally {
+            if (return_parseResponse > 0) {
+                setGrid(imagePaths, timestamp, result);
+            }
+        }
 
 //        try {
 //            okhttpThread.join();
@@ -91,36 +103,16 @@ public class LogActivity extends AppCompatActivity {
 //        }
 
 //        Log.d("beforeRequest", uuid[0]);
-//        requestS3Log(uuid, timestamp, image_location);
+//        setGrid(uuid, timestamp, image_location);
 
-        MyAsyncTask task = new MyAsyncTask();
-        task.execute("", "", "");
+//        MyAsyncTask task = new MyAsyncTask();
+//        task.execute("", "", "");
 
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
-//        while(handler.hasMessages(1)){
-//            Log.i("onStartUuid", uuid[0]);
-//
-//            handler.removeMessages(1);
-//            requestS3Log(uuid, timestamp, image_location);
-//        }
-
-//        synchronized (callback){
-//            try{
-//                callback.wait();
-//                Log.i("onStartUuid", uuid[0]);
-//
-//            requestS3Log(uuid, timestamp, image_location);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
-
-
     }
 
     @Override
@@ -129,54 +121,82 @@ public class LogActivity extends AppCompatActivity {
     }
 
 
-    void sendLogHttp(final String email) throws IOException {
+    String sendLogHttp(final String email) throws IOException, ExecutionException, InterruptedException {
+//        okhttpThread = new HttpThread(callback, user_email);
+//        okhttpThread.start();
+        String response;
+        CallRequestHttp callRequestHttp = new CallRequestHttp();
+//        callRequestHttp.run();        //runnable
 
-//         new Thread() {
-//            public void run() {
-//                OkHttpClient client = new OkHttpClient();
-////                     RequestBody body = new FormBody.Builder()
-////                             .add("Token", FirebaseInstanceId.getInstance().getToken())
-////                             .build();
-//
-//                RequestBody body = RequestBody.create(JSON, "{\"email\": \"" + email + "\", \"duration\": "+0+"}");
-//                Log.d("sendLogHttp", "Body : " + body);
-//
-//                Request request = new Request.Builder()
-//                        .url("https://grad-project-app.herokuapp.com/user/logs")
-//                        .post(body)
-//                        .build();
-//
-//
-////                    response = client.newCall(request).execute();
-//                    client.newCall(request).enqueue(callback);
-////                    returnresponse[0] = client.newCall(request).execute();
-//
-////                    responsestring[0] = new String(response.body().string());
-////                    resp_string = new String(response.body().string());
-////                    Log.i("ReturnResponse[0]", returnresponse[0].body().string());
-////                    Log.i("insideThread-response", response.body().string());
-////                    Log.i("Thread_respstring", responsestring[0]);
-////                    parseResponse(response);
-//
-//            }
+        response = callRequestHttp.execute().get();
+//        response = callRequestHttp.getResponse();
 
-        okhttpThread = new HttpThread(callback, user_email);
-        okhttpThread.start();
-//        Log.i("Response[0]-2", response[0].body().string());
-//        return response[0];
-
-//        Log.i("beforereturn_respstring", responsestring[0]);
-//        Log.i("beforereturn_respstring", resp_string);
-//        return responsestring[0];
+        Log.i("Response", "sendloghttp : " + response);
+        return response;
     }
 
-    //    void parseResponse(Response response) throws JSONException, IOException {
-    void parseResponse(String responsestring) throws JSONException, IOException {
-        //Json parsing
-//        StringBuffer sb = new StringBuffer();
+    public class CallRequestHttp extends AsyncTask<String, String, String> {
+        //        class CallRequestHttp implements Runnable{
+//RequestHttp requestHttp = new RequestHttp();
+        RequestHttp requestHttp;
+        String json = "{\"email\": \"" + user_email + "\", \"duration\": " + 0 + "}";
+        String response;
+        int ok = 0;
+//        @Override
+//        public void run() {
+//            try {
+//                response = requestHttp.post("https://grad-project-app.herokuapp.com/user/logs", json);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//        public String getResponse(){
+//            return response;
+//        }
 
-//        JSONArray jarray = new JSONArray();
+        @Override
+        protected void onPreExecute() {
+//            super.onPreExecute();
+            requestHttp = new RequestHttp();
+        }
 
+        @Override
+        protected String doInBackground(String... url) {
+            String res = null;
+            try {
+                res = requestHttp.post("https://grad-project-app.herokuapp.com/user/logs", json);
+                Log.i("Response", res);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return res;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+//            super.onPostExecute(s);
+            response = s;
+            Log.i("Response-postexecute-s", s);
+            Log.i("Response-postexecute-response", response);
+            ok = 1;
+        }
+
+
+        public String getResponse() {
+            if (ok == 1) {
+                Log.i("Response", "response not null");
+                return response;
+            } else {
+                Log.i("Response", "response null/ ok == 0");
+                return null;
+            }
+
+        }
+    }
+
+
+    int parseResponse(String responsestring) throws JSONException, IOException {
         Log.i("parseResponse", "parseResponse started");
         Log.i("parseResponse-responsesstring", responsestring);
 //        if (response == null) return;
@@ -187,12 +207,9 @@ public class LogActivity extends AppCompatActivity {
 //        String jsonData = response.body().string();
         String jsonData = responsestring;
 
-
         Log.i("jsonData", jsonData);
         JSONObject Jobject = new JSONObject(jsonData);
 //        JSONObject Jobject = new JSONObject(response.body().string());
-
-
 //        JsonObject Jobject = new JsonParser().parse(jsonData).getAsJsonObject();
 
 //        JSONArray Jarray = Jobject.getAsJsonArray("result");
@@ -202,9 +219,9 @@ public class LogActivity extends AppCompatActivity {
         Log.i("Jarraylength", String.valueOf(Jarray.length()));
         length_jarray = Jarray.length();
 
-        uuid = new String[length_jarray];
+        imagePaths = new String[length_jarray];
         timestamp = new String[length_jarray];
-        image_location = new int[length_jarray];
+        result = new String[length_jarray];
 
 
         String urls[] = new String[Jarray.length()];
@@ -212,65 +229,63 @@ public class LogActivity extends AppCompatActivity {
         for (int i = 0; i < length_jarray; i++) {
             JSONObject object = Jarray.getJSONObject(i);
 
-            uuid[i] = object.getString("key");
+            imagePaths[i] = object.getString("key");
 //            timestamp[i] = object.getString("timestamp");
             timestamp[i] = String.valueOf(object.getLong("timestamp"));
+            result[i] = object.getString("result");
 //            if(object.getString("result").equals("unknown")){
 //                image_location[i] = 1;
 //            }
 //            else{
 //                image_location[i] = 0;
 //            }
-            Log.i("uuid", uuid[i]);
+            Log.i("imagePaths", imagePaths[i]);
             Log.i("timestamp", timestamp[i]);
 //            Log.i("image_location", String.valueOf(image_location[i]));
 
-            urls[i] = "https://s3.amazonaws.com/androidprojectapp-userfiles-mobilehub-1711223959/" + uuid[i] + ".jpg";
+            urls[i] = "https://s3.amazonaws.com/androidprojectapp-userfiles-mobilehub-1711223959/" + imagePaths[i] + ".jpg";
             Log.i("urls", urls[i]);
         }
-
-//        requestS3Log(uuid, timestamp);
-
-
+        return length_jarray;
     }
 
 
-    public void requestS3Log(String[] imageUuids, String[] timestamp, int[] image_location) {
-        Log.i("requestS3Log", "requestS3Log started");
+    public void setGrid(String[] imagePaths, String[] timestamp, String[] result) {
+        Log.i("setGrid", "setGrid started");
 
         log_gridView = (GridView) findViewById(R.id.log_gridView);
 //        gridView.setAdapter(new ImageAdapter(this, urls));
 
-        Log.i("requestLog_imageUuid", imageUuids[0]);
-        Log.i("requestLog_timestamp", timestamp[0]);
-        Log.i("requestLog_location", String.valueOf(image_location[0]));
+        Log.i("setGrid_imageUuid", imagePaths[0]);
+        Log.i("setGrid_timestamp", timestamp[0]);
+        Log.i("setGrid_location", result[0]);
 
-        log_gridView.setAdapter(new ImageAdapter(this, imageUuids, timestamp, image_location));
+        log_gridView.setAdapter(new ImageAdapter2(this, imagePaths, timestamp, result));
 //        @NonNull Context context, @NonNull String[] imageUuids, @Nullable String[] timestamp, @NonNull int[] uuid_location
     }
 
-    public class MyAsyncTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... strings) {
-            return null;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            okhttpThread = new HttpThread(callback, user_email);
-            okhttpThread.start();
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            Log.i("onStartUuid", uuid[0]);
-
-//            handler.removeMessages(1);
-            requestS3Log(uuid, timestamp, image_location);
-        }
-
-    }
+//    public class MyAsyncTask extends AsyncTask<String, Void, String> {
+//
+//        @Override
+//        protected String doInBackground(String... strings) {
+//            return null;
+//        }
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//            okhttpThread = new HttpThread(callback, user_email);
+//            okhttpThread.start();
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String s) {
+//            super.onPostExecute(s);
+//            Log.i("onStartUuid", uuid[0]);
+//
+////            handler.removeMessages(1);
+//            setGrid(uuid, timestamp, image_location);
+//        }
+//
+//    }
 }

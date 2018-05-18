@@ -1,5 +1,7 @@
 package com.example.jhyun_000.fcmtest;
 
+import android.util.Log;
+
 import java.io.IOException;
 
 import okhttp3.MediaType;
@@ -13,12 +15,13 @@ import okhttp3.Response;
  */
 
 public class RequestHttp {
-    OkHttpClient client;
-    public static final MediaType JSON = MediaType.parse("application/json; charset=uft-8");
+    OkHttpClient client = new OkHttpClient();
+    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     //post, put, delete
     String post(String url, String json) throws IOException {
         RequestBody body = RequestBody.create(JSON, json);
+        Log.i("http-requestbody", body.toString());
         Request request = new Request.Builder()
                 .url(url)
                 .post(body)

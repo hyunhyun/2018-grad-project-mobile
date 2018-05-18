@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     Button face_register_page_button;
     Button log_button;
     Button button_visitor;
+    Button profile_button;
 
     double longitude;
     double latitude;
@@ -280,7 +281,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
+        profile_button = (Button) findViewById(R.id.profile_button);
+        profile_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, Profile.class);
+                startActivity(intent);
+            }
+        });
 
     }
 

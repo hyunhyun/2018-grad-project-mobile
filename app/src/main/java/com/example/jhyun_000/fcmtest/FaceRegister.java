@@ -59,6 +59,7 @@ public class FaceRegister extends AppCompatActivity {
     TextView text2;
     TextView text3;
     String mCurrentPhotoPath;
+    int threadNumber;
 
     private static final int PICK_FROM_ALBUM = 1;
     private static final int PICK_FROM_ALBUM_MULTIPLE = 2;
@@ -242,7 +243,7 @@ public class FaceRegister extends AppCompatActivity {
         }).execute();
     }
 
-    public void uploadWithTransferUtility(Uri uri, String uuid) {
+    public void uploadWithTransferUtility(Uri uri, final String uuid) {
 
         String replaced = user_email.replaceAll("[@.]", "-");
         final String madeKey = replaced + "/user/" + uuid + ".jpg";
@@ -312,6 +313,16 @@ public class FaceRegister extends AppCompatActivity {
 //                    s3client.setObjectAcl("androidprojectapp-userfiles-mobilehub-1711223959", madeKey, CannedAccessControlList.PublicRead);
 
 //                    sendRegisterHttp(user_email, "user", imageuuids);
+                    threadNumber--;
+
+                    if (threadNumber == 0) {
+                        // some function. ->send to server
+                        Log.i("s3", "s3 3 all finished");
+                        sendRegisterHttp(user_email, "user", imageuuids);
+                    }
+
+
+                    Log.i("s3", uuid + "upload completed.");
                 }
             }
 
@@ -443,19 +454,24 @@ public class FaceRegister extends AppCompatActivity {
                 imageView1.setImageURI(imageuris[0]);
                 imageView2.setImageURI(imageuris[1]);
                 imageView3.setImageURI(imageuris[2]);
-                text1.setText(imageuris[0].toString());
+
 //                 upload 주석처리해놨엉
 //                uploadData(imageuris[0], String.valueOf(0001));
 //                uploadData(imageuris[1], String.valueOf(0002));
 //                uploadData(imageuris[2], String.valueOf(0003));
 
-//                uploadData(imageuris[0], imageuuids[0]);
-//                uploadData(imageuris[1], imageuuids[1]);
-//                uploadData(imageuris[2], imageuuids[2]);
+                threadNumber = 3;
+                uploadData(imageuris[0], imageuuids[0]);
+                uploadData(imageuris[1], imageuuids[1]);
+                uploadData(imageuris[2], imageuuids[2]);
 
-                text1.setText(imageuuids[0]);
-                text2.setText(imageuuids[1]);
-                text3.setText(imageuuids[2]);
+//                S3Async task = new S3Async();
+
+//                task.execute();
+
+//                text1.setText(imageuuids[0]);
+//                text2.setText(imageuuids[1]);
+//                text3.setText(imageuuids[2]);
 
 //                sendRegisterHttp(user_email, "user", imageuuids);
 
@@ -518,7 +534,7 @@ public class FaceRegister extends AppCompatActivity {
     }
 
 
-    public class MyAsyncTask extends AsyncTask<String, Void, String> {
+    public class S3Async extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... strings) {
@@ -539,6 +555,10 @@ public class FaceRegister extends AppCompatActivity {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
 
+            Log.i("PostExecute", "onpostexecuted");
+            text1.setText(imageuuids[0]);
+            text2.setText(imageuuids[1]);
+            text3.setText(imageuuids[2]);
 
         }
 

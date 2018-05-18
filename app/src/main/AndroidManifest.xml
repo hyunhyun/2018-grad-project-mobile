@@ -107,6 +107,8 @@
         <activity android:name=".ViewUser" />
         <activity android:name=".EmergencyActivity" />
 
+        <activity android:name=".Profile" />
+
         <service
             android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService"
             android:enabled="true" />
