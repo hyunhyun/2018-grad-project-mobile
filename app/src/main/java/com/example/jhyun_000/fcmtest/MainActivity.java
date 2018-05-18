@@ -59,8 +59,9 @@ public class MainActivity extends AppCompatActivity {
     Button login_page_button;
     Button face_register_page_button;
     Button log_button;
-    Button button_visitor;
+    //    Button button_visitor;
     Button profile_button;
+    Button device_button;
 
     double longitude;
     double latitude;
@@ -269,18 +270,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        button_visitor = (Button) findViewById(R.id.button_visitor);
-        button_visitor.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ViewVisitor.class);
-                String uuid[] = {"a86d0a71-5152-4a09-a9f4-880acc661008"};
-                String result[] = {"friend"};
-                intent.putExtra("uuids", uuid);
-                intent.putExtra("result", result);
-                startActivity(intent);
-            }
-        });
+//        button_visitor = (Button) findViewById(R.id.button_visitor);
+//        button_visitor.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(MainActivity.this, ViewVisitor.class);
+//                String uuid[] = {"a86d0a71-5152-4a09-a9f4-880acc661008"};
+//                String result[] = {"friend"};
+//                intent.putExtra("uuids", uuid);
+//                intent.putExtra("result", result);
+//                startActivity(intent);
+//            }
+//        });
         profile_button = (Button) findViewById(R.id.profile_button);
         profile_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -290,6 +291,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        device_button = (Button) findViewById(R.id.device_button);
+        device_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, DeviceRegister.class);
+                startActivity(intent);
+            }
+        });
     }
 
     void sendTokenHttp() {

@@ -18,17 +18,23 @@
         android:layout_height="wrap_content"
         android:text="log_Button" />
 
-    <Button
-        android:id="@+id/button_visitor"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="visitor" />
+    <!--<Button-->
+    <!--android:id="@+id/button_visitor"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="visitor" />-->
 
     <Button
         android:id="@+id/profile_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="profile" />
+
+    <Button
+        android:id="@+id/device_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="DEVICE" />
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -122,13 +122,13 @@ public class EmergencyActivity extends AppCompatActivity {
         while (cursor.moveToNext()) {
             double longitude = cursor.getDouble(1);
             double latitude = cursor.getDouble(2);
-            Log.i("cursor", "longitude is : " + longitude + " latitude is : " + latitude);
+            Log.i("Emergency", "longitude is : " + longitude + " latitude is : " + latitude);
 //            if (longitude != null && latitude != null)
             Jsonarray += ", {\"longitude\" : " + longitude + ", \"latitude\": " + latitude + "}";
         }
         Jsonarray += "]}";
 
-        Log.d("Jsonarray", Jsonarray);
+        Log.i("Emergency", "Jsonarray:" + Jsonarray);
 
         //이걸 server로 보내야함
         final String finalJsonarray = Jsonarray;
@@ -153,7 +153,7 @@ public class EmergencyActivity extends AppCompatActivity {
                 }
 
                 try {
-                    Log.d("Response", response.body().string());
+                    Log.i("Emergency Response", response.body().string());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -163,7 +163,7 @@ public class EmergencyActivity extends AppCompatActivity {
 
 //        RequestHttp requestHttp = new RequestHttp();
 //        String response = requestHttp.post("http://grad-project-app.herokuapp.com/user/emergency", Jsonarray);
-        Log.d("Jsonarray", Jsonarray);
+        Log.i("Emergency", "Jsonarray :" + Jsonarray);
 //        Log.i("Response", response );
     }
 
