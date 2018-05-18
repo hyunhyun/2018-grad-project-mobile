@@ -45,13 +45,15 @@ repositories {
 
 dependencies {
 //    implementation 'com.google.firebase:firebase-auth:11.0.4'
-    implementation 'com.google.firebase:firebase-auth:11.8.0'
+//    implementation 'com.google.firebase:firebase-auth:11.8.0'
+    implementation 'com.google.firebase:firebase-auth:15.1.0'
     compile 'com.android.support:appcompat-v7:27.0.2'
     compile 'com.android.support:animated-vector-drawable:27.0.2'
     compile 'com.android.support:support-v4:27.0.2'
     compile 'com.android.support:support-compat:27.0.2'
 
-    compile 'com.google.firebase:firebase-messaging:11.8.0'
+//    compile 'com.google.firebase:firebase-messaging:11.8.0'
+    compile 'com.google.firebase:firebase-messaging:15.0.2'
     compile 'com.firebase:firebase-jobdispatcher:0.8.5'
 
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
@@ -77,6 +79,8 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
 
     compile 'org.json:json:20171018'
+    implementation 'com.google.android.gms:play-services-maps:15.0.1'
 }
 
+//apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.gms.google-services'

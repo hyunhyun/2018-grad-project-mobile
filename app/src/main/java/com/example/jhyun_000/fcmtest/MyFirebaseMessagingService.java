@@ -66,9 +66,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 String click_action = remoteMessage.getNotification().getClickAction();
 //                Intent intent = new Intent(click_action);
                 Intent intent = new Intent(this, ViewVisitor.class);
-////            Intent intent = new Intent(this, MainActivity.class);
-//                String urls[]={"jojo-gmail-com/user/a86d0a71-5152-4a09-a9f4-880acc661008.jpg"};
-//                String uuid[]={"a86d0a71-5152-4a09-a9f4-880acc661008"};
                 String uuid = remoteMessage.getData().get("uuid");
                 String result = remoteMessage.getData().get("result");
 
@@ -76,11 +73,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 intent.putExtra("result", result);
                 startActivity(intent);
             } else if (remoteMessage.getNotification().getTag().toString().equals("SHOW_USER")) {       //사용자
-
                 Intent intent = new Intent(this, ViewUser.class);
                 startActivity(intent);
 //                YesNoDialog(getApplicationContext(), "사용자", "귀가 알림을 해제 하시겠습니까?");
 
+            } else if (remoteMessage.getNotification().getTag().toString().equals("SHOW_EMERGENCY")) {       //도움요청 옴
+                Intent intent = new Intent(this, DeliveredHelp.class);
+                startActivity(intent);
             }
 
             if (/* Check if data needs to be processed by long running job */ true) {
