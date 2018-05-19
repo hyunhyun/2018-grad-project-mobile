@@ -78,7 +78,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 //                YesNoDialog(getApplicationContext(), "사용자", "귀가 알림을 해제 하시겠습니까?");
 
             } else if (remoteMessage.getNotification().getTag().toString().equals("SHOW_EMERGENCY")) {       //도움요청 옴
+                String latitude = remoteMessage.getData().get("latitude");
+                String longitude = remoteMessage.getData().get("longitude");
+
                 Intent intent = new Intent(this, DeliveredHelp.class);
+                intent.putExtra("latitude", latitude);
+                intent.putExtra("longitude", longitude);
                 startActivity(intent);
             }
 

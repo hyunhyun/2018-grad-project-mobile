@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     //    Button button_visitor;
     Button profile_button;
     Button device_button;
+    Button map_button;
 
     double longitude;
     double latitude;
@@ -296,6 +297,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, DeviceRegister.class);
+                startActivity(intent);
+            }
+        });
+
+        map_button = (Button) findViewById(R.id.map_button);
+        map_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, DeliveredHelp.class);
                 startActivity(intent);
             }
         });

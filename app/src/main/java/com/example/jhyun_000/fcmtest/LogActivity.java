@@ -139,7 +139,14 @@ public class LogActivity extends AppCompatActivity {
         //        class CallRequestHttp implements Runnable{
 //RequestHttp requestHttp = new RequestHttp();
         RequestHttp requestHttp;
-        String json = "{\"email\": \"" + user_email + "\", \"duration\": " + 0 + "}";
+
+        //        duration mili second = 1/1000 초
+//        3600초 = 1시간
+//        3600* 24 = 1day
+        int days = 7;
+
+        //        String json = "{\"email\": \"" + user_email + "\", \"duration\": " + 0 + "}";
+        String json = "{\"email\": \"" + user_email + "\", \"duration\": " + 3600 * 24 * days * 1000 + "}";
         String response;
         int ok = 0;
 //        @Override
