@@ -7,8 +7,8 @@
 
 해당 리파지토리는 client인 안드로이드의 소스입니다.
 
-1. API 설계 : [API]([서버 API 설계 · hyunhyun/2018-grad-project-mobile Wiki · GitHub](https://github.com/hyunhyun/2018-grad-project-mobile/wiki/%EC%84%9C%EB%B2%84-API-%EC%84%A4%EA%B3%84)
-2. Client 설명: [Andriod]([안드로이드Client · hyunhyun/2018-grad-project-mobile Wiki · GitHub](https://github.com/hyunhyun/2018-grad-project-mobile/wiki/%EC%95%88%EB%93%9C%EB%A1%9C%EC%9D%B4%EB%93%9CClient)
+1. API 설계 : [API](https://github.com/hyunhyun/2018-grad-project-mobile/wiki/%EC%84%9C%EB%B2%84-API-%EC%84%A4%EA%B3%84)
+2. Client 설명: [Andriod](https://github.com/hyunhyun/2018-grad-project-mobile/wiki/%EC%95%88%EB%93%9C%EB%A1%9C%EC%9D%B4%EB%93%9CClient)
 ### 기본기능
 * 방문자  실시간으로 외부에서도 사진으로 조회
 * 지인 얼굴 등록후 방문시 알림
@@ -24,3 +24,5 @@
 	* 외부라이브러리 : SQLite, Okhttp, Firebase Authentication, Firebase Cloud 메시징, AWS S3
 * Hardware 개발환경 : Raspberry pi, Raspbian OS (Linux)
 * 협업도구 : Git
+
+
